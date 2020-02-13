@@ -1,0 +1,240 @@
+use std::ops;
+
+#[derive(Clone, Debug, Default)]
+pub struct Vec3 {
+    e: [f32; 3],
+}
+
+impl Vec3 {
+    pub fn new(e0: f32, e1: f32, e2: f32) -> Vec3 {
+        Vec3 { e: [e0, e1, e2] }
+    }
+
+    pub fn x(&self) -> f32 {
+        self.e[0]
+    }
+    pub fn y(&self) -> f32 {
+        self.e[1]
+    }
+    pub fn z(&self) -> f32 {
+        self.e[2]
+    }
+
+    pub fn r(&self) -> f32 {
+        self.e[0]
+    }
+    pub fn g(&self) -> f32 {
+        self.e[1]
+    }
+    pub fn b(&self) -> f32 {
+        self.e[2]
+    }
+
+    pub fn length(&self) -> f32 {
+        (self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]).sqrt()
+    }
+
+    pub fn sq_length(&self) -> f32 {
+        self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
+    }
+
+    pub fn normalize(&mut self) {
+        let k = self.length();
+        self.e[0] *= k;
+        self.e[1] *= k;
+        self.e[2] *= k;
+    }
+
+    pub fn normalized(&self) -> Vec3 {
+        let k = self.length();
+        self / k
+    }
+
+    pub fn dot(&self, other: &Vec3) -> f32 {
+        self.e[0] * other.e[0] + self.e[1] * other.e[1] + self.e[2] * other.e[2]
+    }
+
+    pub fn cross(&self, other: &Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[1] * other.e[2] - self.e[2] * other.e[1],
+            self.e[2] * other.e[0] - self.e[0] * other.e[2],
+            self.e[0] * other.e[1] - self.e[1] * other.e[0],
+        )
+    }
+}
+
+impl ops::Add for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] + rhs.e[0],
+            self.e[1] + rhs.e[1],
+            self.e[2] + rhs.e[2],
+        )
+    }
+}
+
+impl ops::Add<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn add(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] + rhs.e[0],
+            self.e[1] + rhs.e[1],
+            self.e[2] + rhs.e[2],
+        )
+    }
+}
+
+impl ops::Add<&Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn add(self, rhs: &Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] + rhs.e[0],
+            self.e[1] + rhs.e[1],
+            self.e[2] + rhs.e[2],
+        )
+    }
+}
+
+impl ops::Sub<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] - rhs.e[0],
+            self.e[1] - rhs.e[1],
+            self.e[2] - rhs.e[2],
+        )
+    }
+}
+
+impl ops::Sub<&Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: &Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] - rhs.e[0],
+            self.e[1] - rhs.e[1],
+            self.e[2] - rhs.e[2],
+        )
+    }
+}
+
+impl ops::Sub<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] - rhs.e[0],
+            self.e[1] - rhs.e[1],
+            self.e[2] - rhs.e[2],
+        )
+    }
+}
+
+impl ops::Sub<&Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: &Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] - rhs.e[0],
+            self.e[1] - rhs.e[1],
+            self.e[2] - rhs.e[2],
+        )
+    }
+}
+
+impl ops::Mul for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] * rhs.e[0],
+            self.e[1] * rhs.e[1],
+            self.e[2] * rhs.e[2],
+        )
+    }
+}
+
+impl ops::Mul<f32> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: f32) -> Vec3 {
+        Vec3::new(self.e[0] * rhs, self.e[1] * rhs, self.e[2] * rhs)
+    }
+}
+
+impl ops::Mul<f32> for &Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: f32) -> Vec3 {
+        Vec3::new(self.e[0] * rhs, self.e[1] * rhs, self.e[2] * rhs)
+    }
+}
+
+impl ops::Mul<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Vec3 {
+        rhs * self
+    }
+}
+
+impl ops::Mul<&Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: &Vec3) -> Vec3 {
+        rhs * self
+    }
+}
+
+impl ops::Div<f32> for Vec3 {
+    type Output = Vec3;
+
+    fn div(self, rhs: f32) -> Vec3 {
+        Vec3::new(self.e[0] / rhs, self.e[1] / rhs, self.e[2] / rhs)
+    }
+}
+
+impl ops::Div<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn div(self, rhs: Vec3) -> Vec3 {
+        rhs / self
+    }
+}
+
+impl ops::Div<f32> for &Vec3 {
+    type Output = Vec3;
+
+    fn div(self, rhs: f32) -> Vec3 {
+        Vec3::new(self.e[0] / rhs, self.e[1] / rhs, self.e[2] / rhs)
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct Ray {
+    a: Vec3,
+    b: Vec3,
+}
+
+impl Ray {
+    pub fn new(a: Vec3, b: Vec3) -> Ray {
+        Ray { a, b }
+    }
+
+    pub fn origin(&self) -> &Vec3 {
+        &self.a
+    }
+
+    pub fn direction(&self) -> &Vec3 {
+        &self.b
+    }
+
+    pub fn at_time(&self, t: f32) -> Vec3 {
+        &self.a + t * &self.b
+    }
+}
