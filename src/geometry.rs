@@ -1,4 +1,7 @@
+use std::iter;
 use std::ops;
+
+use rand::Rng;
 
 #[derive(Clone, Debug, Default)]
 pub struct Vec3 {
@@ -8,6 +11,19 @@ pub struct Vec3 {
 impl Vec3 {
     pub fn new(e0: f32, e1: f32, e2: f32) -> Vec3 {
         Vec3 { e: [e0, e1, e2] }
+    }
+
+    pub fn sample_from_unit_sphere() -> Vec3 {
+        let mut rng = rand::thread_rng();
+        iter::repeat_with(|| {
+            2.0 * Vec3::new(rng.gen(), rng.gen(), rng.gen()) - Vec3::new(1.0, 1.0, 1.0)
+        })
+        .find(|p| p.sq_length() < 1.0)
+        .expect("`find` should succeed on this infinite generator.")
+    }
+
+    pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
+        v - 2.0 * v.dot(normal) * normal
     }
 
     pub fn x(&self) -> f32 {
