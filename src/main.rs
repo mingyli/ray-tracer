@@ -65,11 +65,12 @@ fn main() {
         )),
     ]);
 
-    let camera = Camera::new(
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(-2.0, -1.0, -1.0),
-        Vec3::new(4.0, 0.0, 0.0),
-        Vec3::new(0.0, 2.0, 0.0),
+    let camera = Camera::from_fov(
+        Vec3::new(-2.0, 2.0, 1.0),
+        Vec3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        40.0,
+        nx as f32 / ny as f32,
     );
 
     println!("P3\n{} {}\n255", nx, ny);
