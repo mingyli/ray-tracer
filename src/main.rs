@@ -9,8 +9,7 @@ mod object;
 
 use camera::Camera;
 use geometry::{Ray, Vec3};
-use material::{Dielectric, Lambertian, Metal};
-use object::{Hittable, Sphere, World};
+use object::{Hittable, World};
 
 fn bounce(ray: &Ray, world: &World, depth: i32) -> Vec3 {
     if let Some(hit) = world.hit(ray, 0.001, std::f32::MAX) {
@@ -31,45 +30,17 @@ fn bounce(ray: &Ray, world: &World, depth: i32) -> Vec3 {
 }
 
 fn main() {
-    let nx = 400;
-    let ny = 200;
+    let nx = 200;
+    let ny = 150;
     let ns = 10;
 
-    let sphere = Sphere::new(
-        Vec3::new(0.0, 0.0, -1.0),
-        0.5,
-        Lambertian::new(Vec3::new(0.1, 0.2, 0.5)),
-    );
-    let earth = Sphere::new(
-        Vec3::new(0.0, -100.5, -1.0),
-        100.0,
-        Lambertian::new(Vec3::new(0.8, 0.8, 0.0)),
-    );
-    let world = World::new(vec![
-        Box::new(sphere),
-        Box::new(earth),
-        Box::new(Sphere::new(
-            Vec3::new(1.0, 0.0, -1.0),
-            0.5,
-            Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.0),
-        )),
-        Box::new(Sphere::new(
-            Vec3::new(-1.0, 0.0, -1.0),
-            0.5,
-            Dielectric::new(1.5),
-        )),
-        Box::new(Sphere::new(
-            Vec3::new(-1.0, 0.0, -1.0),
-            -0.45,
-            Dielectric::new(1.5),
-        )),
-    ]);
+    let world = World::random();
 
     let camera = Camera::from_fov(
-        Vec3::new(-2.0, 2.0, 1.0),
-        Vec3::new(0.0, 0.0, -1.0),
+        Vec3::new(4.0, 1.5, -3.0),
+        Vec3::new(0.0, -0.5, 1.0),
         Vec3::new(0.0, 1.0, 0.0),
-        40.0,
+        90.0,
         nx as f32 / ny as f32,
     );
 
