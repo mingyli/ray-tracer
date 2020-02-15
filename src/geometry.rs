@@ -26,6 +26,24 @@ impl Vec3 {
         v - 2.0 * v.dot(normal) * normal
     }
 
+    pub fn refract(
+        v: &Vec3,
+        normal: &Vec3,
+        refractive_index1: f32,
+        refractive_index2: f32,
+    ) -> Option<Vec3> {
+        let uv = v.normalized();
+        let dt = uv.dot(normal);
+        let ratio = refractive_index1 / refractive_index2;
+        let discriminant = 1.0 - ratio * ratio * (1.0 - dt * dt);
+        if discriminant > 0.0 {
+            let refracted = ratio * (uv - normal * dt) - normal * discriminant.sqrt();
+            Some(refracted)
+        } else {
+            None
+        }
+    }
+
     pub fn x(&self) -> f32 {
         self.e[0]
     }
@@ -76,6 +94,14 @@ impl Vec3 {
             self.e[2] * other.e[0] - self.e[0] * other.e[2],
             self.e[0] * other.e[1] - self.e[1] * other.e[0],
         )
+    }
+}
+
+impl ops::Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3::new(-self.e[0], -self.e[1], -self.e[2])
     }
 }
 

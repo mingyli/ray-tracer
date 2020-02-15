@@ -9,7 +9,7 @@ mod object;
 
 use camera::Camera;
 use geometry::{Ray, Vec3};
-use material::{Lambertian, Metal};
+use material::{Dielectric, Lambertian, Metal};
 use object::{Hittable, Sphere, World};
 
 fn bounce(ray: &Ray, world: &World, depth: i32) -> Vec3 {
@@ -38,7 +38,7 @@ fn main() {
     let sphere = Sphere::new(
         Vec3::new(0.0, 0.0, -1.0),
         0.5,
-        Lambertian::new(Vec3::new(0.8, 0.3, 0.3)),
+        Lambertian::new(Vec3::new(0.1, 0.2, 0.5)),
     );
     let earth = Sphere::new(
         Vec3::new(0.0, -100.5, -1.0),
@@ -51,12 +51,17 @@ fn main() {
         Box::new(Sphere::new(
             Vec3::new(1.0, 0.0, -1.0),
             0.5,
-            Metal::new(Vec3::new(0.8, 0.6, 0.2), 1.0),
+            Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.0),
         )),
         Box::new(Sphere::new(
             Vec3::new(-1.0, 0.0, -1.0),
             0.5,
-            Metal::new(Vec3::new(0.8, 0.8, 0.8), 0.3),
+            Dielectric::new(1.5),
+        )),
+        Box::new(Sphere::new(
+            Vec3::new(-1.0, 0.0, -1.0),
+            -0.45,
+            Dielectric::new(1.5),
         )),
     ]);
 
