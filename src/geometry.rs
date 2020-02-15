@@ -99,6 +99,14 @@ impl ops::Add<&Vec3> for &Vec3 {
     }
 }
 
+impl ops::AddAssign<Vec3> for Vec3 {
+    fn add_assign(&mut self, rhs: Vec3) {
+        self.e[0] += rhs.e[0];
+        self.e[1] += rhs.e[1];
+        self.e[2] += rhs.e[2];
+    }
+}
+
 impl ops::Sub<Vec3> for Vec3 {
     type Output = Vec3;
 
@@ -212,6 +220,14 @@ impl ops::Div<f32> for &Vec3 {
 
     fn div(self, rhs: f32) -> Vec3 {
         Vec3::new(self.e[0] / rhs, self.e[1] / rhs, self.e[2] / rhs)
+    }
+}
+
+impl ops::DivAssign<f32> for Vec3 {
+    fn div_assign(&mut self, rhs: f32) {
+        self.e[0] /= rhs;
+        self.e[1] /= rhs;
+        self.e[2] /= rhs;
     }
 }
 

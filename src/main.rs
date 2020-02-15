@@ -1,3 +1,7 @@
+use std::iter;
+
+use rand::Rng;
+
 mod camera;
 mod geometry;
 mod object;
@@ -23,6 +27,7 @@ fn make_color(ray: &Ray, world: &World) -> Vec3 {
 fn main() {
     let nx = 600;
     let ny = 300;
+    let ns = 10;
 
     let sphere = Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5);
     let earth = Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0);
@@ -36,12 +41,19 @@ fn main() {
     );
 
     println!("P3\n{} {}\n255", nx, ny);
+
+    let mut rng = rand::thread_rng();
     for j in (0..ny).rev() {
         for i in 0..nx {
-            let u = i as f32 / nx as f32;
-            let v = j as f32 / ny as f32;
-            let ray = camera.ray(u, v);
-            let color = make_color(&ray, &world);
+            let color = iter::repeat_with(|| {
+                let u = (i as f32 + rng.gen::<f32>()) / nx as f32;
+                let v = (j as f32 + rng.gen::<f32>()) / ny as f32;
+                camera.ray(u, v)
+            })
+            .take(ns)
+            .fold(Vec3::default(), |acc, ray| acc + make_color(&ray, &world))
+                / ns as f32;
+
             let ir = (255.99 * color.r()) as i32;
             let ig = (255.99 * color.g()) as i32;
             let ib = (255.99 * color.b()) as i32;
