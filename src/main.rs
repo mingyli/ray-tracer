@@ -1,5 +1,7 @@
 use std::iter;
 
+use indicatif::ProgressIterator;
+use itertools::Itertools;
 use rand::Rng;
 
 mod camera;
@@ -47,22 +49,20 @@ fn main() {
     println!("P3\n{} {}\n255", nx, ny);
 
     let mut rng = rand::thread_rng();
-    for j in (0..ny).rev() {
-        for i in 0..nx {
-            let mut color = iter::repeat_with(|| {
-                let u = (i as f32 + rng.gen::<f32>()) / nx as f32;
-                let v = (j as f32 + rng.gen::<f32>()) / ny as f32;
-                camera.ray(u, v)
-            })
-            .take(ns)
-            .fold(Vec3::default(), |acc, ray| acc + bounce(&ray, &world, 0));
-            color /= ns as f32;
-            color = Vec3::new(color.r().sqrt(), color.g().sqrt(), color.b().sqrt());
+    for (j, i) in (0..ny).rev().cartesian_product(0..nx).progress() {
+        let mut color = iter::repeat_with(|| {
+            let u = (i as f32 + rng.gen::<f32>()) / nx as f32;
+            let v = (j as f32 + rng.gen::<f32>()) / ny as f32;
+            camera.ray(u, v)
+        })
+        .take(ns)
+        .fold(Vec3::default(), |acc, ray| acc + bounce(&ray, &world, 0));
+        color /= ns as f32;
+        color = Vec3::new(color.r().sqrt(), color.g().sqrt(), color.b().sqrt());
 
-            let ir = (255.99 * color.r()) as i32;
-            let ig = (255.99 * color.g()) as i32;
-            let ib = (255.99 * color.b()) as i32;
-            println!("{} {} {}", ir, ig, ib);
-        }
+        let ir = (255.99 * color.r()) as i32;
+        let ig = (255.99 * color.g()) as i32;
+        let ib = (255.99 * color.b()) as i32;
+        println!("{} {} {}", ir, ig, ib);
     }
 }

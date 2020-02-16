@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 rand = "0.7.3"
+itertools = "0.8.2"
+indicatif = "0.14.0"
