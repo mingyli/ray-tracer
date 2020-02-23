@@ -22,6 +22,10 @@ impl Vec3 {
         .expect("`find` should succeed on this infinite generator.")
     }
 
+    pub fn gamma2_corrected(&self) -> Vec3 {
+        Vec3::new(self.e[0].sqrt(), self.e[1].sqrt(), self.e[2].sqrt())
+    }
+
     pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
         v - 2.0 * v.dot(normal) * normal
     }
@@ -138,6 +142,16 @@ impl ops::Add<&Vec3> for &Vec3 {
             self.e[1] + rhs.e[1],
             self.e[2] + rhs.e[2],
         )
+    }
+}
+
+impl std::iter::Sum<Vec3> for Vec3 {
+    fn sum<I>(iter: I) -> Vec3
+    where
+        I: Iterator<Item = Vec3>,
+    {
+        use std::ops::Add;
+        iter.fold(Vec3::default(), Vec3::add)
     }
 }
 

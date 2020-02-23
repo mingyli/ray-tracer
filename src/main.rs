@@ -38,15 +38,18 @@ fn bounce(ray: &Ray, world: &World, depth: u32) -> Vec3 {
 
 async fn pixel_color(camera: &Camera, world: &World, i: u32, j: u32) -> (u32, u32, u32) {
     let mut rng = rand::thread_rng();
-    let mut color = iter::repeat_with(|| {
+    let rays = iter::repeat_with(|| {
         let u = (i as f32 + rng.gen::<f32>()) / NUM_COLS as f32;
         let v = (j as f32 + rng.gen::<f32>()) / NUM_ROWS as f32;
-        camera.ray(u, v)
+        (u, v)
     })
-    .take(NUM_SAMPLES)
-    .fold(Vec3::default(), |acc, ray| acc + bounce(&ray, &world, 0));
-    color /= NUM_SAMPLES as f32;
-    color = Vec3::new(color.r().sqrt(), color.g().sqrt(), color.b().sqrt());
+    .map(|(u, v)| camera.ray(u, v))
+    .take(NUM_SAMPLES);
+
+    let colors = future::join_all(rays.map(|ray| async move { bounce(&ray, &world, 0) })).await;
+
+    let color: Vec3 = colors.into_iter().sum::<Vec3>() / NUM_SAMPLES as f32;
+    let color = color.gamma2_corrected();
 
     const RGB_SCALAR: f32 = 255.99;
     let ir = (RGB_SCALAR * color.r()) as u32;
