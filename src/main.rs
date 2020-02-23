@@ -1,6 +1,7 @@
 use futures::future;
 use std::iter;
 
+use indicatif::ProgressBar;
 use itertools::Itertools;
 use rand::Rng;
 
@@ -76,7 +77,15 @@ async fn async_main(config: &Config) {
         .rev()
         .cartesian_product(0..config.width)
         .map(|(j, i)| pixel_color(&config, &camera, &world, i, j));
-    let colors = future::join_all(futures).await;
+
+    let progress = ProgressBar::new((config.width * config.height).into());
+    let colors = future::join_all(futures.map(|future| async {
+        let result = future.await;
+        progress.inc(1);
+        result
+    }))
+    .await;
+    progress.finish_at_current_pos();
 
     eprintln!("Writing out pixel RGB values...");
     println!("P3\n{} {}\n255", config.width, config.height);
