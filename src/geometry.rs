@@ -1,4 +1,3 @@
-use std::iter;
 use std::ops;
 
 use rand::Rng;
@@ -13,13 +12,15 @@ impl Vec3 {
         Vec3 { e: [e0, e1, e2] }
     }
 
-    pub fn sample_from_unit_sphere() -> Vec3 {
+    pub fn sample_in_unit_sphere() -> Vec3 {
         let mut rng = rand::thread_rng();
-        iter::repeat_with(|| {
-            2.0 * Vec3::new(rng.gen(), rng.gen(), rng.gen()) - Vec3::new(1.0, 1.0, 1.0)
-        })
-        .find(|p| p.sq_length() < 1.0)
-        .expect("`find` should succeed on this infinite generator.")
+        let radius: f32 = rng.gen();
+        let azimuth: f32 = 2.0 * std::f32::consts::PI * rng.gen::<f32>();
+        let polar: f32 = std::f32::consts::PI * rng.gen::<f32>();
+        let x = radius * polar.sin() * azimuth.cos();
+        let y = radius * polar.sin() * azimuth.sin();
+        let z = radius * polar.cos();
+        Vec3 { e: [x, y, z] }
     }
 
     pub fn gamma2_corrected(&self) -> Vec3 {

@@ -17,7 +17,7 @@ impl Lambertian {
 
 impl Material for Lambertian {
     fn scatter(&self, _ray: &Ray, hit: &Hit) -> Option<(Vec3, Ray)> {
-        let target = &hit.p + &hit.normal + Vec3::sample_from_unit_sphere();
+        let target = &hit.p + &hit.normal + Vec3::sample_in_unit_sphere();
         let scattered = Ray::new(hit.p.clone(), target - &hit.p);
         let attenuation = self.albedo.clone();
         Some((attenuation, scattered))
@@ -40,7 +40,7 @@ impl Material for Metal {
         let reflected = Vec3::reflect(&ray.direction().normalized(), &hit.normal);
         let scattered = Ray::new(
             hit.p.clone(),
-            reflected + self.fuzz * Vec3::sample_from_unit_sphere(),
+            reflected + self.fuzz * Vec3::sample_in_unit_sphere(),
         );
         let attenuation = self.albedo.clone();
         if scattered.direction().dot(&hit.normal) > 0.0 {
