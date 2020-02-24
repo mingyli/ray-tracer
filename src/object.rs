@@ -66,11 +66,11 @@ impl<M: Material> Hittable for Sphere<M> {
 
 #[derive(Default)]
 pub struct World {
-    objects: Vec<Box<dyn Hittable>>,
+    objects: Vec<Box<dyn Hittable + Send + Sync>>,
 }
 
 impl World {
-    pub fn new(objects: Vec<Box<dyn Hittable>>) -> World {
+    pub fn new(objects: Vec<Box<dyn Hittable + Send + Sync>>) -> World {
         World { objects }
     }
 
@@ -113,7 +113,7 @@ impl World {
             1000.0,
             Lambertian::new(Vec3::new(0.5, 0.5, 0.5)),
         );
-        let mut objects: Vec<Box<dyn Hittable>> = vec![Box::new(earth)];
+        let mut objects: Vec<Box<dyn Hittable + Send + Sync>> = vec![Box::new(earth)];
         let mut rng = rand::thread_rng();
         for x in (-11)..11 {
             for z in (-11)..11 {

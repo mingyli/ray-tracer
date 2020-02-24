@@ -12,3 +12,4 @@ futures = "0.3.4"
 rand = "0.7.3"
 indicatif = "0.14.0"
 itertools = "0.8.2"
+tokio = { version = "0.2.11", features = ["full", "rt-threaded"] }

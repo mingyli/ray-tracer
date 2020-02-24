@@ -39,8 +39,8 @@ async fn pixel_color(
     i: u32,
     j: u32,
 ) -> (u32, u32, u32) {
-    let mut rng = rand::thread_rng();
     let rays = iter::repeat_with(|| {
+        let mut rng = rand::thread_rng();
         let u = (i as f32 + rng.gen::<f32>()) / config.width as f32;
         let v = (j as f32 + rng.gen::<f32>()) / config.height as f32;
         (u, v)
@@ -61,7 +61,7 @@ async fn pixel_color(
     (ir, ig, ib)
 }
 
-async fn async_main(config: &Config) {
+async fn async_main(config: Config) {
     eprintln!("Ray tracing...");
 
     let world = World::random();
@@ -85,7 +85,7 @@ async fn async_main(config: &Config) {
         result
     }))
     .await;
-    progress.finish_at_current_pos();
+    progress.finish();
 
     eprintln!("Writing out pixel RGB values...");
     println!("P3\n{} {}\n255", config.width, config.height);
@@ -150,6 +150,7 @@ fn main() -> Result<(), clap::Error> {
         max_depth,
     };
 
-    futures::executor::block_on(async_main(&config));
+    let mut runtime = dbg!(tokio::runtime::Builder::new().threaded_scheduler()).build()?;
+    runtime.block_on(async_main(config));
     Ok(())
 }
