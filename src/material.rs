@@ -1,16 +1,17 @@
 use crate::geometry::{Ray, Vec3};
 use crate::object::Hit;
+use crate::texture::Texture;
 
 pub trait Material {
     fn scatter(&self, ray: &Ray, hit: &Hit) -> Option<(Vec3, Ray)>;
 }
 
 pub struct Lambertian {
-    albedo: Vec3,
+    albedo: Box<dyn Texture>,
 }
 
 impl Lambertian {
-    pub fn new(albedo: Vec3) -> Lambertian {
+    pub fn new(albedo: Box<dyn Texture>) -> Lambertian {
         Lambertian { albedo }
     }
 }
@@ -19,7 +20,7 @@ impl Material for Lambertian {
     fn scatter(&self, _ray: &Ray, hit: &Hit) -> Option<(Vec3, Ray)> {
         let target = &hit.p + &hit.normal + Vec3::sample_in_unit_sphere();
         let scattered = Ray::new(hit.p.clone(), target - &hit.p);
-        let attenuation = self.albedo.clone();
+        let attenuation = self.albedo.value(0.0, 0.0, &hit.p);
         Some((attenuation, scattered))
     }
 }

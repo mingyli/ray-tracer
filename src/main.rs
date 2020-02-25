@@ -9,6 +9,7 @@ mod camera;
 mod geometry;
 mod material;
 mod object;
+mod texture;
 
 use camera::Camera;
 use geometry::{Ray, Vec3};

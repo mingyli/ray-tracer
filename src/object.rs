@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 
 use crate::geometry::{Ray, Vec3};
 use crate::material::{Dielectric, Lambertian, Material, Metal};
+use crate::texture::{Checkered, Uniform};
 
 pub struct Hit<'a> {
     pub t: f32,
@@ -78,12 +79,12 @@ impl World {
         let sphere = Sphere::new(
             Vec3::new(0.0, 0.0, -1.0),
             0.5,
-            Lambertian::new(Vec3::new(0.1, 0.2, 0.5)),
+            Lambertian::new(Box::new(Uniform::new(Vec3::new(0.1, 0.2, 0.5)))),
         );
         let earth = Sphere::new(
             Vec3::new(0.0, -100.5, -1.0),
             100.0,
-            Lambertian::new(Vec3::new(0.8, 0.8, 0.0)),
+            Lambertian::new(Box::new(Uniform::new(Vec3::new(0.8, 0.8, 0.0)))),
         );
         World::new(vec![
             Box::new(sphere),
@@ -108,10 +109,14 @@ impl World {
 
     pub fn random() -> World {
         use rand::Rng;
+        let checker = Checkered::new(
+            Box::new(Uniform::new(Vec3::new(0.2, 0.3, 0.1))),
+            Box::new(Uniform::new(Vec3::new(0.9, 0.9, 0.9))),
+        );
         let earth = Sphere::new(
             Vec3::new(0.0, -1000.0, 0.0),
             1000.0,
-            Lambertian::new(Vec3::new(0.5, 0.5, 0.5)),
+            Lambertian::new(Box::new(checker)),
         );
         let mut objects: Vec<Box<dyn Hittable + Send + Sync>> = vec![Box::new(earth)];
         let mut rng = rand::thread_rng();
@@ -130,11 +135,11 @@ impl World {
                     objects.push(Box::new(Sphere::new(
                         center,
                         0.2,
-                        Lambertian::new(Vec3::new(
+                        Lambertian::new(Box::new(Uniform::new(Vec3::new(
                             rng.gen::<f32>() * rng.gen::<f32>(),
                             rng.gen::<f32>() * rng.gen::<f32>(),
                             rng.gen::<f32>() * rng.gen::<f32>(),
-                        )),
+                        )))),
                     )));
                 } else if r < 0.9 {
                     objects.push(Box::new(Sphere::new(
@@ -167,7 +172,7 @@ impl World {
         objects.push(Box::new(Sphere::new(
             Vec3::new(-3.0, 1.0, 0.5),
             1.0,
-            Lambertian::new(Vec3::new(0.2, 0.2, 0.6)),
+            Lambertian::new(Box::new(Uniform::new(Vec3::new(0.2, 0.2, 0.6)))),
         )));
         objects.push(Box::new(Sphere::new(
             Vec3::new(4.0, 1.0, 0.0),
